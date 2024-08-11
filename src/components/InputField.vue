@@ -2,7 +2,7 @@
 import { defineEmits, defineProps } from 'vue/dist/vue.js';
 
 const emit = defineEmits<{
-  (e: 'update:value', value: string): void;
+  (e: 'update:modelValue', value: string): void;
 }>()
 
 const { hasError, error } = defineProps({
@@ -18,14 +18,14 @@ const { hasError, error } = defineProps({
 
 const handleInput = (e: Event): void => {
   const target = e.target as HTMLInputElement;
-  emit('update:value', target.value);
+  emit('update:modelValue', target.value);
 }
 
 </script>
 
 <template>
   <div class="input-box">
-    <input class="input-element" @input="handleInput" placeholder="Insert some hash" />
+    <input class="input-element" @input="(e) => handleInput(e)" placeholder="Insert some hash" />
     <span v-if="hasError" class="error">{{ error }}</span>
   </div>
 </template>
@@ -41,9 +41,8 @@ const handleInput = (e: Event): void => {
 
 .input-element {
   padding: 6px 4px 6px 4px;
-  margin: 2px;
   width: 100%;
-  height: auto;
+  min-height: 44px;
   background: transparent;
   color: #f1f5f9;
   font-size: 16px;
@@ -67,7 +66,7 @@ const handleInput = (e: Event): void => {
 .error {
   color: red;
   font-family: Merriweather, sans-serif;
-  font-size: 10px;
+  font-size: 12px;
   margin-top: 5px;
   margin-left: 8px;
 }

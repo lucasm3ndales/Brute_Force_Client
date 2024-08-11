@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { defineEmits, defineProps, ref } from 'vue';
+import { ChevronDown, ChevronUp } from "lucide-vue-next";
 
-const { items } = defineProps<{
+const { items } = defineProps({
   items: {
-    type: Array<String>,
+    type: Array<string>,
     default: () => []
-  };
-}>();
+  }
+});
 
 const emit = defineEmits<{
   (e: 'update:SelectedValue', value: string): void;
@@ -21,25 +22,29 @@ const handleBtn = () => {
 }
 
 const onSelectChange = (value: string): void => {
-  selectedItem.value = value;
-  emit('update:SelectedValue', value);
+  if(value === selectedItem.value) {
+    selectedItem.value = '';
+  } else {
+    selectedItem.value = value;
+  }
+  emit('update:SelectedValue', selectedItem.value);
+  isOpen.value = false;
 };
 
-const clearSelection = (): void => {
-  selectedItem.value = '';
-  emit('update:SelectedValue', '');
-};
 </script>
 
 <template>
   <div class="select-box-container">
     <div class="select-box" @click="handleBtn">
       <div v-if="!selectedItem" class="text-box">
-        Select encryption algorithm
+        Select encryption
       </div>
       <div v-else class="selected-item">
         {{ selectedItem }}
       </div>
+      <span class="separator" />
+      <ChevronDown v-if="!isOpen" class="arrow-icon" />
+      <ChevronUp v-if="isOpen" class="arrow-icon" />
     </div>
 
     <div v-if="isOpen" class="item-list">
@@ -48,7 +53,10 @@ const clearSelection = (): void => {
           :key="i"
           @click="onSelectChange(i)"
           class="item"
-          :class="{'item-border': idx < items.length - 1}"
+          :class="{
+            'item-border': idx < items.length - 1,
+            'item-selected': selectedItem == i,
+          }"
       >
         {{ i }}
       </div>
@@ -60,26 +68,24 @@ const clearSelection = (): void => {
 .select-box-container {
   position: relative;
   display: inline-block;
-  width: 50%;
+  width: 100%;
   height: auto;
 }
 
 .select-box {
   display: flex;
   align-items: center;
-  justify-content: center;
-  min-width: 100%;
-  height: auto;
-  padding: 6px 4px;
-  border: solid 1px #334155;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 44px;
+  padding: 6px;
+  border: 1px solid #334155;
   border-radius: 6px;
   cursor: pointer;
-  user-select: none;
   background: transparent;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  position: relative;
 }
 
 .text-box {
@@ -90,7 +96,6 @@ const clearSelection = (): void => {
 
 .selected-item {
   font-size: 14px;
-  font-weight: bold;
   font-family: 'RussoOne', sans-serif;
 }
 
@@ -100,36 +105,43 @@ const clearSelection = (): void => {
   left: 0;
   display: flex;
   flex-direction: column;
-  border: solid 1px #334155;
+  border: 1px solid #334155;
   border-radius: 6px;
   color: #f1f5f9;
   background-color: #0f172a;
   max-height: 200px;
-  overflow-x: hidden;
   overflow-y: auto;
   z-index: 10;
   width: 100%;
+  margin-top: 3px;
+  font-family: 'RussoOne', sans-serif;
 }
 
 .item {
   padding: 6px;
   cursor: pointer;
+  background-color: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background-color 0.3s, opacity 0.3s;
 }
 
 .item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.item-selected {
   background-color: #f1f5f9;
   color: #0f172a;
 }
 
-.item-border {
-  border-bottom: solid 1px #f1f5f9;
+.separator {
+  flex-grow: 1;
 }
 
-.item:hover + .item-border {
-  display: none;
+.arrow-icon {
+  color: #f1f5f9;
+  width: 20px;
+  height: 20px;
 }
 
-.item-selected {
-  background-color: red;
-}
 </style>
