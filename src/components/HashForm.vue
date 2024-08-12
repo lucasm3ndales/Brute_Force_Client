@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, ref, reactive} from "vue";
+import {computed, ref, reactive, onUpdated, watch} from "vue";
 import {Algorithm, HashDTO} from "../models/hashDTO";
 import {fetchHash} from "../services/hashService";
 import SelectItem from "./SelectItem.vue";
@@ -27,14 +27,22 @@ const hasResult = computed(() => {
   return result.value.trim().length > 0;
 });
 
-const sendHash = async () => {
+const validateFields = (): boolean => {
   if (!isHashValid.value) {
     isErrorHash.value = true;
-    return;
   }
 
   if (!isAlgorithmSelected.value) {
     isErrorAlgorithm.value = true;
+  }
+
+  return !(isErrorHash.value || isErrorAlgorithm.value);
+}
+
+const sendHash = async () => {
+
+  if(!validateFields()) {
+    return
   }
 
   isErrorHash.value = false;
@@ -53,6 +61,24 @@ const sendHash = async () => {
   }
 };
 
+watch(
+    () => hashDTO.hash,
+    (value) => {
+      if(value != '') {
+        isErrorHash.value = false;
+      }
+    }
+)
+
+watch(
+    () => hashDTO.algorithm,
+    (value) => {
+      if(value != null || value != '') {
+        isErrorAlgorithm.value = false;
+      }
+    }
+)
+
 </script>
 
 <template>
@@ -66,8 +92,8 @@ const sendHash = async () => {
         method="post"
         class="inputs-container"
     >
-      <InputField @update:modelValue="value => hashDTO.hash = value" :has-error="isErrorHash" error="Invalid hash!"/>
-      <SelectItem :items="algorithmKeys" @update:-selected-value="value => hashDTO.algorithm = value"/>
+      <InputField @update:modelValue="value => hashDTO.hash = value" :has-error="isErrorHash"/>
+      <SelectItem @update:-selected-value="value => hashDTO.algorithm = value as Algorithm" :items="algorithmKeys" :has-error="isErrorAlgorithm"/>
       <button type="submit" class="btn">Decrypt</button>
     </form>
   </div>

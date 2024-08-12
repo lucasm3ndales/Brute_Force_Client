@@ -1,19 +1,15 @@
 <script setup lang="ts">
-import { defineEmits, defineProps } from 'vue/dist/vue.js';
+import { defineEmits, defineProps } from 'vue';
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void;
 }>()
 
-const { hasError, error } = defineProps({
+const { hasError } = defineProps({
   hasError: {
     value: Boolean,
     default: false,
-  },
-  error: {
-    value: String,
-    default: '',
-  },
+  }
 })
 
 const handleInput = (e: Event): void => {
@@ -26,7 +22,7 @@ const handleInput = (e: Event): void => {
 <template>
   <div class="input-box">
     <input class="input-element" @input="(e) => handleInput(e)" placeholder="Insert some hash" />
-    <span v-if="hasError" class="error">{{ error }}</span>
+    <span v-if="hasError" class="error">Invalid hash!</span>
   </div>
 </template>
 

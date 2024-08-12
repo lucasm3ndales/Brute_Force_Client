@@ -2,10 +2,14 @@
 import { defineEmits, defineProps, ref } from 'vue';
 import { ChevronDown, ChevronUp } from "lucide-vue-next";
 
-const { items } = defineProps({
+const { items, hasError } = defineProps({
   items: {
     type: Array<string>,
     default: () => []
+  },
+  hasError: {
+    type: Boolean,
+    default: false,
   }
 });
 
@@ -46,6 +50,7 @@ const onSelectChange = (value: string): void => {
       <ChevronDown v-if="!isOpen" class="arrow-icon" />
       <ChevronUp v-if="isOpen" class="arrow-icon" />
     </div>
+    <span v-if="hasError" class="error">Invalid algorithm!</span>
 
     <div v-if="isOpen" class="item-list">
       <div
@@ -61,13 +66,16 @@ const onSelectChange = (value: string): void => {
         {{ i }}
       </div>
     </div>
+
   </div>
+
 </template>
 
 <style scoped>
 .select-box-container {
   position: relative;
   display: inline-block;
+  text-align: start;
   width: 100%;
   height: auto;
 }
@@ -86,6 +94,7 @@ const onSelectChange = (value: string): void => {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  margin-bottom: 1px;
 }
 
 .text-box {
@@ -142,6 +151,13 @@ const onSelectChange = (value: string): void => {
   color: #f1f5f9;
   width: 20px;
   height: 20px;
+}
+
+.error {
+  color: red;
+  font-family: Merriweather, sans-serif;
+  font-size: 12px;
+  margin-left: 9px;
 }
 
 </style>
