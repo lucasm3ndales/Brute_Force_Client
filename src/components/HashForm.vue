@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, ref, reactive, onUpdated, watch} from "vue";
+import {computed, ref, reactive, watch} from "vue";
 import {Algorithm, HashDTO} from "../models/hashDTO";
 import {fetchHash} from "../services/hashService";
 import SelectItem from "./SelectItem.vue";
@@ -13,7 +13,7 @@ const result = ref<string>("");
 const isErrorHash = ref<boolean>(false)
 const isErrorAlgorithm = ref<boolean>(false)
 const isLoading = ref<boolean>(false);
-const algorithmKeys = Object.keys(Algorithm).filter(key => isNaN(Number(key)));
+const algorithmKeys = Object.values(Algorithm);
 
 const isHashValid = computed(() => {
   return hashDTO.hash.trim().length > 0;
@@ -26,6 +26,12 @@ const isAlgorithmSelected = computed(() => {
 const hasResult = computed(() => {
   return result.value.trim().length > 0;
 });
+
+const resetFields = () => {
+  result.value = '';
+  hashDTO.hash = '';
+  hashDTO.algorithm = null;
+}
 
 const validateFields = (): boolean => {
   if (!isHashValid.value) {
@@ -40,7 +46,6 @@ const validateFields = (): boolean => {
 }
 
 const sendHash = async () => {
-
   if(!validateFields()) {
     return
   }
@@ -49,14 +54,17 @@ const sendHash = async () => {
   isErrorAlgorithm.value = false;
 
   isLoading.value = true;
+
+  const resolver = () => new Promise(resolve => setTimeout(resolve, 3000));
+
   try {
-    const res = await fetchHash(hashDTO);
-    console.log(res)
-    result.value = res;
+    const fetch = fetchHash(hashDTO)
+    const [res] = await Promise.all([fetch, resolver()]);
+    console.log(res.password);
+    result.value = res.password;
   } catch (err) {
     console.error('Error:', err);
   } finally {
-    result.value = '';
     isLoading.value = false;
   }
 };
@@ -97,7 +105,7 @@ watch(
       <button type="submit" class="btn">Decrypt</button>
     </form>
   </div>
-  <div v-if="isLoading" class="loading">Decrypting...</div>
+  <div v-if="isLoading && !hasResult" class="loading">Decrypting...</div>
   <div v-if="!isLoading && hasResult"  class="container">
     <div class="title-container">
       <h1 class="title">Brute Force Test</h1>
@@ -112,6 +120,9 @@ watch(
         <div class="result-title">The result:</div>
         {{ result }}
       </div>
+    </div>
+    <div>
+      <button type="button" class="btn" @click="resetFields">Try Again</button>
     </div>
   </div>
 </template>
@@ -197,16 +208,24 @@ watch(
   display: flex;
   flex-direction: row;
   margin-top: 12px;
+  align-items: center;
+  gap: 6px;
+  color: dodgerblue;
 }
 
 .result {
   display: flex;
   flex-direction: row;
+  margin-bottom: 6px;
+  align-items: center;
+  gap: 6px;
+  color: limegreen;
 }
 
 .result-title {
   font-weight: bold;
   font-size: 20px;
+  color: #f1f5f9;
 }
 
 @keyframes blink {

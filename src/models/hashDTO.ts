@@ -5,12 +5,14 @@ export interface HashDTO {
     algorithm: Algorithm | null,
 }
 
+export interface PasswordDTO {
+    password: string,
+}
+
 export enum Algorithm {
     MD5 = 'MD5',
-    SHA1 = 'SHA1',
-    HPC = 'HPC',
-    FEAL4 = 'FEAL-4',
-    TEA = 'TEA',
-    RC5 = 'RC5',
-    DES = 'DES'
+    SHA1 = 'SHA-1',
+    SHA256 = 'SHA-256',
+    SHA512 = 'SHA-512',
+    NTLM = 'NTLM',
 }
