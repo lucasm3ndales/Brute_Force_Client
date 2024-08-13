@@ -11,5 +11,5 @@ export interface PasswordDTO {
 
 export enum Algorithm {
     MD5 = 'MD5',
-    SHA1 = 'SHA-1',
+    SHA1 = 'SHA1',
 }
